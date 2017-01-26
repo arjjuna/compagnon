@@ -1,16 +1,88 @@
-from flask import abort, flash, url_for, render_template, redirect, request
+from flask import abort, flash, url_for, render_template, redirect, request, current_app
 from . import client
 from .. import db
 from ..models import Prof, Client, Booking, Comment
 from ..decorators import client_required
 from flask_login import login_required, current_user
-from .forms import BookingForm, CommentForm
+from .forms import BookingForm, CommentForm, PictureForm, CropForm
+
+from werkzeug import secure_filename
+from PIL import Image
+
+#A function that resizes a picture
+def crop_resize(img_path, x, y, w, h):
+    im = Image.open(img_path)
+    background = Image.new('RGBA', (w, h), (255, 255, 255, 255))
+    background.paste(im, (-x, -y))
+    im.close()
+    
+    return background
 
 @client.route('/')
 @login_required
 @client_required
 def index():
-	return "Client side"
+	user = current_user
+	return render_template('client/index.html', user=user)
+	
+@client.route('/profile')
+@login_required
+@client_required
+def profile():
+	user = current_user
+	return render_template('client/profile.html', user=user)
+	
+@client.route('/edit/profile', methods=['GET', 'POST'])
+@login_required
+@client_required
+def edit_profile():
+	user = current_user
+	picture_form = PictureForm()
+	if picture_form.validate_on_submit():
+		filename_picture = secure_filename("user" + "_" + str(user.id) + "client" + "_" + str(user.client.id) + "_" + picture_form.picture.data.filename)
+		picture_form.picture.data.save( current_app.config['APP_UPLOAD_FOLDER'] + '/' + filename_picture)
+		picture_url = url_for('main.uploaded_file', filename=filename_picture)
+		
+		user.picture  = picture_url
+		
+		db.session.add(user)
+		db.session.commit()
+		db.session.rollback()
+		
+		flash(u"Photo mise \xb7 jour")
+		return redirect(url_for('client.edit_image'))
+	return render_template('client/edit_profile.html', user=user, picture_form=picture_form)
+	
+#The page for cropping and resizing the images	
+@client.route('/edit/image', methods=['GET', 'POST'])
+@login_required
+@client_required
+def edit_image():
+	dimension  = (150, 150)
+	user       = current_user
+	image      = user.picture
+
+
+	form = CropForm()
+	
+	if form.validate_on_submit():		
+		cropped  = crop_resize(current_app.config['APP_STATIC_FOLDER'] + image, int(form.x.data), int(form.y.data), int(form.width.data), int(form.height.data))
+		cropped.save(current_app.config['APP_STATIC_FOLDER'] +  image)
+		
+		#Not necesary, unless you come up with a way to rename the picture
+		user.picture = image
+
+		
+		db.session.commit()		
+		flash(u"Image sauvegard\xe9e")
+		
+
+		return redirect(url_for('client.edit_profile'))
+	
+		
+	return render_template('client/edit_image.html', user=user, image=image, form=form, dimension=dimension)
+	
+	
 	
 @client.route('/profs')
 @login_required

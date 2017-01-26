@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, BooleanField, SubmitField,	DateTimeField, IntegerField, TextField
+from wtforms import StringField, PasswordField, BooleanField, SubmitField,	DateTimeField, IntegerField, TextField, FileField, HiddenField
 from wtforms import ValidationError
 from wtforms.validators import Required, Length, Email, Regexp, EqualTo
 from wtforms.fields.html5 import DateField
@@ -27,6 +27,25 @@ class DateTimeWidget(object):
 			
 		
 		return HTMLString(html % (field_id))
+		
+
+		
+class PictureForm(FlaskForm):
+	picture = FileField("Photo", validators = [Required(u"Aucune image sp\xe9cifi\xe9e")])
+	submit = SubmitField('Enregistrer')
+	
+			
+class CropForm(FlaskForm):
+	x = HiddenField(id="dataX")
+	y = HiddenField(id="dataY")
+	width = HiddenField(id="dataWidth")
+	height = HiddenField(id="dataHeight")
+	rotate = HiddenField(id="dataRotate")
+	scaleX = HiddenField(id="dataScaleX")
+	scaleY = HiddenField(id="dataScaleY")
+	
+	
+	submit = SubmitField('Submit')
 
 class BookingForm(FlaskForm):
 	time = DateTimeField('time', format='%Y-%m-%d %H:%M', widget=DateTimeWidget())

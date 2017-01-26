@@ -22,8 +22,8 @@ class DevelopmentConfig(Config):
 	APP_PATH = r'C:\compagnon\app'	
 	DEBUG                   = True
 	
-	APP_UPLOAD_FOLDER = r'C:\compagnon\app\static\uploads'
-	APP_STATIC_FOLDER = r'C:\compagnon\app\static'
+	APP_UPLOAD_FOLDER = r'C:\projet2\website\app\static\uploads'
+	APP_STATIC_FOLDER = r'C:\projet2\website\app\static'
 	
 	MAIL_SERVER             = 'smtp.gmail.com'
 	MAIL_PORT               = 587
@@ -38,8 +38,8 @@ class TestingConfig(Config):
 	APP_PATH = r'C:\compagnon\app'
 	TESTING                 = True
 	
-	APP_UPLOAD_FOLDER = r'C:\compagnon\app\static\uploads'
-	APP_STATIC_FOLDER = r'C:\compagnon\app\static'
+	APP_UPLOAD_FOLDER = r'C:\projet2\website\app\static\uploads'
+	APP_STATIC_FOLDER = r'C:\projet2\website\app\static'
 	
 	TEST_DATABASE_URL        = 'postgresql://postgres:' + PROJECT_DB_PASSWORD + '@localhost/projet2_test'
 	SQLALCHEMY_DATABASE_URI = TEST_DATABASE_URL

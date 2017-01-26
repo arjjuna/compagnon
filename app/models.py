@@ -51,6 +51,7 @@ class User(UserMixin, db.Model):
 	password_hash = db.Column(db.String(128))
 	first_name    = db.Column(db.String(64))
 	last_name     = db.Column(db.String(64))
+	picture       = db.Column(db.String(500))
 	member_since  = db.Column(db.DateTime(), default=datetime.utcnow)
 	confirmed     = db.Column(db.Boolean, default=False)
 	last_seen = db.Column(db.DateTime(), default=datetime.utcnow)
@@ -108,6 +109,8 @@ class User(UserMixin, db.Model):
 				self.role = Role.query.filter_by(name='administrator').first()
 			if self.role is None:
 				self.role = Role.query.filter_by(name='user').first()
+			if self.picture is None:
+				self.picture = current_app.config['APP_UPLOAD_FOLDER'] + '/' + "150x150_placeholder.png"
 	
 	def __repr__(self):
 		return '<User %r, email: %r>' % (self.username, self.email)
@@ -125,7 +128,7 @@ class Prof(UserMixin, db.Model):
 	id            = db.Column(db.Integer, primary_key=True)
 	title = db.Column(db.String(128))
 	user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
-	rate = db.column(db.Integer)
+	rate = db.Column(db.Integer)
 	credit = db.Column(db.Integer, default=0)
 	bookings = db.relationship('Booking', backref='prof')
 

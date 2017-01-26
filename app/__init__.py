@@ -12,6 +12,7 @@ mail = Mail()
 moment = Moment()
 db = SQLAlchemy()
 
+
 login_manager = LoginManager()
 login_manager.session_protection = 'strong'
 login_manager.login_view = 'auth.login'
@@ -40,7 +41,10 @@ def create_app(config_name):
 	app.register_blueprint(client_blueprint, url_prefix='/client')
 	
 	from prof import prof as prof_blueprint
-	app.register_blueprint(prof_blueprint, url_prefix='/prof')
+	app.register_blueprint(prof_blueprint, url_prefix='/prof')	
+	
+	from testbp import testbp as test_blueprint
+	app.register_blueprint(test_blueprint, url_prefix='/test')
 	
 	
 	return app
